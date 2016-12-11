@@ -1,0 +1,20 @@
+#include <synprodcons.h>
+
+void synconsumer(int count)
+{
+  //Code to consume values of global variable 'n' until the value of n is less than or equal to count
+  //print consumed value e.g. consumed : 8
+int i,j,k;
+i=j=k=0;  
+  while(1)
+  {
+    i++;
+    wait(sema);
+    for(k=0,j=n;k<15;k++,j=(j+1)%15)
+      printf("\nConsumer consumed value: %d",shared[j]);
+    printf("\n");
+    signal(sema);
+    if(i==count)
+      return;
+  }
+}

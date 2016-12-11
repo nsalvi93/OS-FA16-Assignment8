@@ -1,0 +1,25 @@
+#include <synprodcons.h>
+
+void synproducer(int count)
+{
+      //Code to produce values less than equal to count, 
+      //produced value should get assigned to global variable 'n'.
+      //print produced value e.g. produced : 8
+  int i=0,k=0;
+  while(1)
+  {
+    i++;
+    wait(sema);
+    for(k=0;k<15;k++)
+    {
+      value++;
+      shared[n]=value;
+      printf("\nProducer produced value: %d",shared[n]);
+      n=(n+1)%15;
+    }
+    printf("\n");
+    signal(sema);
+    if(i==count)
+      return;
+  }
+}

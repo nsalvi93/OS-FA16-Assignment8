@@ -1,0 +1,62 @@
+#include <future.h>
+
+syscall future_get(future *f, int *value)
+{
+  intmask mask;
+  pid32 temp_pid;
+
+  if(f->flag==FUTURE_EXCLUSIVE)
+  {
+    if(f->state==FUTURE_WAITING)
+    {
+      return SYSERR;
+    }
+
+    if(f->state==FUTURE_EMPTY)
+    {
+      f->pid=getpid();
+      f->state=FUTURE_WAITING;
+    }
+
+    while(f->state==FUTURE_WAITING)
+    {
+      printf("");
+    }
+    f->state=FUTURE_EMPTY;
+  }
+
+  else if(f->flag==FUTURE_SHARED)
+  {
+    f->pid=getpid();
+    if(f->state==FUTURE_EMPTY)
+       f->state=FUTURE_WAITING;
+
+    if(f->state==FUTURE_WAITING)
+    {
+      fut_enqueue(f->get_queue,f->pid);
+      suspend(f->pid);
+    }
+  }
+
+  else if(f->flag==FUTURE_QUEUE)
+  {
+    if(fut_isempty(f->set_queue))
+    {
+      f->pid=getpid();
+      fut_enqueue(f->get_queue,f->pid);
+      suspend(f->pid);
+    }
+    else
+    {
+      temp_pid=fut_dequeue(f->set_queue);
+      if(temp_pid==-1)
+      {
+        return -1;
+      }
+      resume(temp_pid);      
+    }
+  }
+
+  *value=*(f->value); 
+  return OK;
+}

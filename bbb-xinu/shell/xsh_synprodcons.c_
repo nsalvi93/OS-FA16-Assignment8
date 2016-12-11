@@ -1,0 +1,43 @@
+
+#include <synprodcons.h>
+
+
+int shared[15];
+int n=0;                 //Definition for global variable 'n'
+int value=0;
+sid32 sema;
+/*Now global variable n will be on Heap so it is accessible all the processes i.e. consume and produce*/
+
+shellcmd xsh_synprodcons(int nargs, char *args[])
+{
+      //Argument verifications and validations
+
+      int count;             //local varible to hold count
+
+      if (nargs == 2 && strncmp(args[1], "--help", 7) == 0) {
+		printf("Usage: %s\n\n", args[0]);
+		printf("Description:\n");
+		printf("\tProducer consumer problem\n");
+		printf("\tPass a number, if number is not passed default value is 2000\n");
+		printf("Options (one per invocation):\n");
+		printf("\t--help\tdisplay this help and exit\n");
+		return 0;
+      }
+
+      if(nargs>2)
+      {
+        fprintf(stderr,"\n%s: many Arguments...!!!",args[0]);
+        fprintf(stderr,"\nUsage prodcons [number]");
+        return 1;
+      }
+      else if (nargs==2)     //check args[1] if present assign value to count
+        count=atoi(args[1]);
+      else
+        count=50;
+
+      //create the process producer and consumer and put them in ready queue.
+      //Look at the definations of function create and resume in exinu/system folder for reference.      
+      resume( create(synproducer, 1024, 20, "producer", 1, count) );
+      resume( create(synconsumer, 1024, 20, "consumer", 1, count) );
+      return 0;
+}

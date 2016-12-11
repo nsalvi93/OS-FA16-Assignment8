@@ -1,0 +1,11 @@
+#include<xinu.h>
+
+/*Global variable for producer consumer*/
+extern int n; /*this is just declaration*/
+extern int value;
+extern int shared[15];
+extern sid32 sema;
+
+/*function Prototype*/
+void synconsumer(int count);
+void synproducer(int count);
